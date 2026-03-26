@@ -1,15 +1,21 @@
 #!/bin/bash
 
-# Tailscale daemon ko userspace mode mein start karein
+# Force Tailscale to stay in userspace
+export TS_USERSPACE=true
+export TS_NO_DIRECT_HW_CONFIG=true
+
+# Start the daemon with explicit flags
 tailscaled --tun=userspace-networking --socks5-server=localhost:1055 &
 
-# Thoda wait karein taaki daemon start ho jaye
+# Wait for it to initialize
 sleep 5
 
-# Agar TAILSCALE_AUTHKEY environment variable set hai, toh login karein
-if [ -n "$TAILSCALE_AUTHKEY" ]; then
-    tailscale up --authkey=$TAILSCALE_AUTHKEY --hostname=railway-vps
+# Auth check
+if [ -z "$TAILSCALE_AUTHKEY" ]; then
+    echo "ERROR: TAILSCALE_AUTHKEY is not set in Railway variables!"
+else
+    tailscale up --authkey=$TAILSCALE_AUTHKEY --hostname=railway-vps --accept-routes
 fi
 
-# SSH server start karein
+# Keep SSH alive
 /usr/sbin/sshd -D
