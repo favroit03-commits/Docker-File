@@ -18,7 +18,7 @@ COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
 # Railway ke liye environment variables
-ENV PORT 22
+ENV SSH_PORT=22
 EXPOSE 22
 
-CMD ["/bin/bash", "/start.sh"]
+CMD ["bash", "/start.sh"]
